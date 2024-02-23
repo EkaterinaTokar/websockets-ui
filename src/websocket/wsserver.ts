@@ -1,15 +1,18 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import {} from "./interface.js"
+import { } from "./interface.js";
+import { registration } from "./player.js";
 
 
 export const wsServer = new WebSocketServer({ port: 3000 });
+
 wsServer.on('connection',  (ws: WebSocket) => {
     console.log('connect');
     ws.on('message', (message: string) => {
         const data = JSON.parse(message);
         switch (data.type) {
             case 'reg':
-                console.log('reg:', data.type);
+               console.log('reg:', data.type);
+               registration(ws, data.data);
                 break;
             case 'create_room':
                 console.log('create_room:', data.type);
