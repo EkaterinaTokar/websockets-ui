@@ -1,7 +1,7 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { WebSocketId } from "./interface.js";
 import { registration } from "./player.js";
-import { createNewRoom } from "./room.js";
+import { createNewRoom, addUserToRoom } from "./room.js";
 
 export const wsServer = new WebSocketServer({ port: 3000 });
 
@@ -15,11 +15,12 @@ wsServer.on('connection',  (ws: WebSocketId ) => {
                registration(ws, data.data);
                 break;
             case 'create_room':
-            console.log('create_room:', data.type);
-            createNewRoom(ws);
+                console.log('create_room:', data.type);
+                createNewRoom(ws);
                 break;
             case 'add_user_to_room':
                 console.log('add_user_to_room:', data.type);
+            addUserToRoom(ws, data.data);
                 break;
             case 'add_ships':
                 console.log('add_ships:', data.type);

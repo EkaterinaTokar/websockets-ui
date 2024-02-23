@@ -47,7 +47,16 @@ export function registration(ws: WebSocketId, data: any) {
             id: 0
         };
         ws.send(JSON.stringify(response));
+        if (players.length > 1) {
+        players.forEach(player => {
+          if(player.ws) updateWinners(player.ws);
+        });
+        players.forEach(player => {
+          if(player.ws) updateRooms(player.ws);
+       });
+        } else {
         updateWinners(ws);
         updateRooms(ws);
+        }
     }
 }

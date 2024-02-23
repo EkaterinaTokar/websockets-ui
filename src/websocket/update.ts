@@ -4,9 +4,10 @@ import { WebSocket } from 'ws';
 
 //update_room
 export function updateRooms(ws: WebSocketId) {
+    const singlePlayerRooms = rooms.filter(room => room.roomUsers.length === 1);
           const response = {
             type: "update_room",
-            data:  JSON.stringify(rooms),
+            data:  JSON.stringify(singlePlayerRooms),
             id: 0
         };
         ws.send(JSON.stringify(response));
