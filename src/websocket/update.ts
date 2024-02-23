@@ -1,7 +1,9 @@
 import { players, winners, rooms } from "./db.js";
+import { WebSocketId } from "./interface.js";
+import { WebSocket } from 'ws';
 
 //update_room
-export function updateRoom(ws: WebSocket) {
+export function updateRooms(ws: WebSocketId) {
           const response = {
             type: "update_room",
             data:  JSON.stringify(rooms),
@@ -11,7 +13,7 @@ export function updateRoom(ws: WebSocket) {
 }
 
 //update_winners
-export function updateWinners(ws: WebSocket) {
+export function updateWinners(ws: WebSocketId) {
             const response = {
             type: "update_winners",
             data:  JSON.stringify(winners),

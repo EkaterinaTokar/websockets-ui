@@ -1,7 +1,9 @@
 import { WebSocket } from 'ws';
 
+export interface WebSocketId extends WebSocket {
+    id: string;
+}
 export interface Player {
-  id?: number;
   name: string;
   password?: string;
   index: number;
@@ -9,7 +11,6 @@ export interface Player {
   ws?: WebSocket; 
 }
 export interface Winner {
-  id?: number;
   name: string;
   wins: number;
 }
