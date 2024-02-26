@@ -31,7 +31,7 @@ export function registration(ws: WebSocketId, data: any) {
         const newPlayer: Player = {
             name: name,
             password: password,
-            index: players.length + 1,
+            index: players.length + 1, //ws.id
             wins: 0,
             ws
         };

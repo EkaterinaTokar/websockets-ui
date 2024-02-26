@@ -29,14 +29,22 @@ export interface Ship {
   direction: boolean;
   length: number;
   type: "small" | "medium" | "large" | "huge";
+  status?: string; //'miss' | 'shot' | 'killed';
+  hits?: [];
 }
 
 export interface Game {
     gameId: number;
     players: {
       player: Player;
-      ships: Ship[];
+      ships: Ship[]; /* player's ships, not enemy's */
+      enemyShips: Cell[];
     }[];
     currentPlayerIndex: number;
 }
-
+export interface Cell {
+    x: number;
+    y: number;
+    status: string;
+    hits?: [];
+}

@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { Player, Room, Game, WebSocketId } from "./interface.js";
-import { players, rooms, games } from "./db.js";
+import { players, rooms, games, gameRooms } from "./db.js";
 import { updateWinners, updateRooms } from "./update.js"
 
 
@@ -51,22 +51,29 @@ export function addUserToRoom(ws: WebSocketId, data: any) {
         room.roomUsers.forEach(player => {
             newGame.players.push({
               player: player,
-              ships: [],
+                ships: [],
+                enemyShips:[],
             });
-            if(player.ws) updateRooms(player.ws);
             
          const response = {
             type: 'create_game',
             data: JSON.stringify({
                 idGame: newGame.gameId,  
-                idPlayer: player.ws?.id,//player.index
+                idPlayer: player.index,
           }),
             id: 0,
            };
             player.ws?.send(JSON.stringify(response));
+            if (player.ws) {
+                 //remove the room from available rooms list
+                 const roomIndex = rooms.findIndex(room => room.roomId === indexRoom)
+                 //gameRooms.push(rooms.splice(roomIndex, 1)[0]);
+                 //console.log("rooms ", rooms);
+                 //console.log("gameRooms ", gameRooms);
+                updateRooms(player.ws);
+            } 
         })
     }
-    // room?.roomUsers.forEach(p => console.log(p.ws?.id, p.name))
 }
 
 function getPlayerByWS(ws: WebSocketId): Player | undefined {

@@ -6,4 +6,6 @@ export const winners: Winner[] = [];
 
 export const rooms: Room[] = [];
 
+export const gameRooms: Room[] = [];
+
 export const games: Game[] = [];
