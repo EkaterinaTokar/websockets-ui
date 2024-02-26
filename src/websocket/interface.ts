@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 
 export interface WebSocketId extends WebSocket {
-    id: string;
+    id: number | string;
 }
 export interface Player {
   id?: string,

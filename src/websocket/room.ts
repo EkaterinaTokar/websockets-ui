@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { Player, Room, Game, WebSocketId } from "./interface.js";
 import { players, rooms, games, gameRooms } from "./db.js";
-import { updateWinners, updateRooms } from "./update.js";
+import { updateRooms } from "./update.js";
 
 
 export function createNewRoom(ws: WebSocketId) {
@@ -22,7 +22,7 @@ export function createNewRoom(ws: WebSocketId) {
                 ws
             })
     updateRooms(ws);
-
+  console.log("Room created and player added to the room");
 }
 
 
@@ -32,7 +32,7 @@ export function addUserToRoom(ws: WebSocketId, data: any) {
 
     const player = getPlayerByWS(ws);
     
-    if (room && player) {
+    if (room && player && !isPlayerInRoom(player, room)) {
         room.roomUsers.push({
             name: player.name,
             index: player.index,
@@ -47,7 +47,6 @@ export function addUserToRoom(ws: WebSocketId, data: any) {
              currentPlayerIndex: 0,
     };
          games.push(newGame);
-        console.log('Creating game for room:', room.roomId);
         room.roomUsers.forEach(player => {
             newGame.players.push({
               player: player,
@@ -65,17 +64,19 @@ export function addUserToRoom(ws: WebSocketId, data: any) {
            };
             player.ws?.send(JSON.stringify(response));
             if (player.ws) {
-                 //remove the room from available rooms list
                  const roomIndex = rooms.findIndex(room => room.roomId === indexRoom)
                  gameRooms.push(rooms.splice(roomIndex, 1)[0]);
-                 //console.log("rooms ", rooms);
-                 //console.log("gameRooms ", gameRooms);
                 updateRooms(player.ws);
             } 
         })
+        console.log("Player added to the room and game created");
     }
 }
 
 function getPlayerByWS(ws: WebSocketId): Player | undefined {
   return players.find(player => player.ws === ws);
+}
+
+function isPlayerInRoom(player: Player, room: Room): boolean {
+  return room.roomUsers.some(user => user.ws === player.ws);
 }

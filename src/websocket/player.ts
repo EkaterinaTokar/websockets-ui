@@ -6,8 +6,8 @@ import { updateWinners, updateRooms } from "./update.js";
 
 
 function generateUUID() {
-    const uuid = crypto.randomBytes(16).toString('hex');
-    console.log(uuid);
+    const hash = crypto.createHash('sha1').update(crypto.randomBytes(16)).digest('hex');
+    const uuid = parseInt(hash.substring(0, 8), 16);
     return uuid;
 }
 
@@ -26,12 +26,13 @@ export function registration(ws: WebSocketId, data: any) {
             id: 0
         };
         ws.send(JSON.stringify(response));
+        console.log("Player already exists");
     } else {
         ws.id = generateUUID();
         const newPlayer: Player = {
             name: name,
             password: password,
-            index: players.length + 1, //ws.id
+            index: ws.id, //players.length + 1
             wins: 0,
             ws
         };
@@ -47,16 +48,20 @@ export function registration(ws: WebSocketId, data: any) {
             id: 0
         };
         ws.send(JSON.stringify(response));
+        console.log("Player registered successfully");
+
         if (players.length > 1) {
         players.forEach(player => {
           if(player.ws) updateWinners(player.ws);
         });
         players.forEach(player => {
           if(player.ws) updateRooms(player.ws);
-       });
+        });
+         console.log("updateWinners & updateRooms");
         } else {
-        updateWinners(ws);
-        updateRooms(ws);
+           updateWinners(ws);
+           updateRooms(ws);
+           console.log("updateWinners & updateRooms");
         }
     }
 }

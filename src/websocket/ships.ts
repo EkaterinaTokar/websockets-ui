@@ -1,6 +1,5 @@
-import { WebSocket } from 'ws';
 import { Game, WebSocketId, Ship } from "./interface.js";
-import { games, gameRooms } from "./db.js";
+import { games } from "./db.js";
 
 
 export function addShips(ws: WebSocketId, data: any) {
@@ -28,6 +27,7 @@ export function addShips(ws: WebSocketId, data: any) {
     }));
   if (game.players.every(player => player.ships.length === 10) && enemyPlayerIndex !== undefined ) {
     startGame(game, enemyPlayerIndex, indexPlayer)
+    console.log("Ships added for the players");
     }
   }
 }
@@ -44,13 +44,12 @@ function startGame(game: Game, enemyPlayerIndex: number, indexPlayer: number) {
     };
         currentPlayer.player.ws?.send(JSON.stringify(response));
        sendTurnInfo(game, enemyPlayerIndex, indexPlayer);  
-  });
+    });
+   console.log("Game started");
 }
 
 export function sendTurnInfo(game: Game, enemyPlayerIndex: number, indexPlayer: number) {
   game.currentPlayerIndex = game.currentPlayerIndex === indexPlayer ? enemyPlayerIndex : indexPlayer;
-  console.log("currentPlayerIndex", game.currentPlayerIndex);
-  console.log("enemyPlayerIndex", enemyPlayerIndex);
     const turnData = {
         type: "turn",
         data: JSON.stringify({

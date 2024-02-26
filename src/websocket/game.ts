@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
-import { Game, WebSocketId, Ship, Winner } from "./interface.js";
-import { games, gameRooms, players, winners } from "./db.js";
+import { WebSocketId, Winner } from "./interface.js";
+import { games, players, winners } from "./db.js";
 import { sendTurnInfo } from './ships.js';
 import { updateWinners } from './update.js';
 
@@ -25,52 +25,52 @@ function sendMessage(playerId: any, message: any) {
   }
 }
 
-
 export function attackFeedback(ws: WebSocketId, data: any) {
     const { gameId, x, y, indexPlayer } = JSON.parse(data);
     const game = games.find(game => game.gameId === gameId);
     if (game) {
-        //const currentPlayerIndex = game.currentPlayerIndex;
         const currentPlayer = game.players.find(player => player.player.index === indexPlayer);
         const enemyPlayer = game.players.find(player => player.player.index !== indexPlayer);
-        let attackResult = 'miss';
+        if (currentPlayer && currentPlayer.player.index === game.currentPlayerIndex) {
+            let attackResult = 'miss';
         
-        const attackedShip = findShipByPosition(x, y, enemyPlayer);
-        if (attackedShip) {
-            console.log("attackedShip", attackedShip);
-            attackedShip.hits.push({ x, y });
-            const hitsCount = attackedShip.hits.length;
-            if (hitsCount === attackedShip.length) {
-                attackResult = 'killed';
-                attackedShip.status = 'killed';
-                if (enemyPlayer?.ships.every(ship => ship.status == 'killed')) {
-                    finishGame(ws, game, indexPlayer);
+            const attackedShip = findShipByPosition(x, y, enemyPlayer);
+            if (attackedShip) {
+                attackedShip.hits.push({ x, y });
+                const hitsCount = attackedShip.hits.length;
+                if (hitsCount === attackedShip.length) {
+                    attackResult = 'killed';
+                    attackedShip.status = 'killed';
+                    if (enemyPlayer?.ships.every(ship => ship.status == 'killed')) {
+                        finishGame(ws, game, indexPlayer);
+                    }
+                } else {
+                    attackResult = 'shot';
+                    attackedShip.status = 'shot';
                 }
             } else {
-              attackResult = 'shot';
-              attackedShip.status = 'shot';
-           }
-        } else {
-            attackResult = 'miss';
-        }
+                attackResult = 'miss';
+            }
 
-         game.players.forEach(player => {
-            const playerIndex = player.player.index;
-            const isCurrentPlayer = playerIndex === currentPlayer?.player.index;
-            sendMessage(playerIndex, {
-                type: 'attack',
-                data: JSON.stringify({
-                    position: { x, y },
-                    currentPlayer: currentPlayer?.player.index,
-                    status: attackResult,
-                }),
+            game.players.forEach(player => {
+                const playerIndex = player.player.index;
+                const isCurrentPlayer = playerIndex === currentPlayer?.player.index;
+                sendMessage(playerIndex, {
+                    type: 'attack',
+                    data: JSON.stringify({
+                        position: { x, y },
+                        currentPlayer: currentPlayer?.player.index,
+                        status: attackResult,
+                    }),
+                });
             });
-        });
         
-        if (attackResult === 'miss') {
-            const enemyPlayerIndex = game?.players.find(player => player.player.index !== indexPlayer)?.player.index ?? -1;
-            console.log("enemyPlayerIndex", enemyPlayerIndex);
-            sendTurnInfo(game, enemyPlayerIndex, indexPlayer);
+            if (attackResult === 'miss') {
+                const enemyPlayerIndex = game?.players.find(player => player.player.index !== indexPlayer)?.player.index ?? -1;
+                sendTurnInfo(game, enemyPlayerIndex, indexPlayer);
+            }
+        } else {
+            console.log("It's not your turn to attack.");
         }
     }
 }

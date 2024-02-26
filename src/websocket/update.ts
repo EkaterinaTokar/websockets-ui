@@ -1,10 +1,9 @@
-import { players, winners, rooms } from "./db.js";
+import { winners, rooms } from "./db.js";
 import { WebSocketId } from "./interface.js";
 import { WebSocket } from 'ws';
 
 //update_room
 export function updateRooms(ws: WebSocketId) {
-   // const singlePlayerRooms = rooms.filter(room => room.roomUsers.length === 1);
           const response = {
             type: "update_room",
             data:  JSON.stringify(rooms),
