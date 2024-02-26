@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { Player, Room, Game, WebSocketId } from "./interface.js";
 import { players, rooms, games, gameRooms } from "./db.js";
-import { updateWinners, updateRooms } from "./update.js"
+import { updateWinners, updateRooms } from "./update.js";
 
 
 export function createNewRoom(ws: WebSocketId) {
@@ -12,7 +12,7 @@ export function createNewRoom(ws: WebSocketId) {
         return;
     }
     const newRoom: Room = {
-        roomId: rooms.length + 1,
+        roomId: Math.floor(Math.random() * 1000000),
         roomUsers: [],
     };
     rooms.push(newRoom);
@@ -67,7 +67,7 @@ export function addUserToRoom(ws: WebSocketId, data: any) {
             if (player.ws) {
                  //remove the room from available rooms list
                  const roomIndex = rooms.findIndex(room => room.roomId === indexRoom)
-                 //gameRooms.push(rooms.splice(roomIndex, 1)[0]);
+                 gameRooms.push(rooms.splice(roomIndex, 1)[0]);
                  //console.log("rooms ", rooms);
                  //console.log("gameRooms ", gameRooms);
                 updateRooms(player.ws);

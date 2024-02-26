@@ -1,4 +1,4 @@
-import { Player, Winner, Room, Game } from "./interface.js";
+import { Player, Winner, Room, Game, Position } from "./interface.js";
 
 export const players: Player[] = [];
 

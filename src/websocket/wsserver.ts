@@ -3,6 +3,7 @@ import { WebSocketId } from "./interface.js";
 import { registration } from "./player.js";
 import { createNewRoom, addUserToRoom } from "./room.js";
 import { addShips } from "./ships.js";
+import { attackFeedback, randomAttack } from "./game.js";
 
 export const wsServer = new WebSocketServer({ port: 3000 });
 
@@ -28,9 +29,12 @@ wsServer.on('connection',  (ws: WebSocketId ) => {
                 addShips(ws, data.data);
             break;
            case 'attack':
-           case 'randomAttack':
                 console.log('attack:', data.type);
-            break;
+                attackFeedback(ws, data.data);
+                break;
+            case 'randomAttack':
+                console.log('randomAttack:', data.type);
+                randomAttack(ws, data.data);
             default:
                 console.log('Unknown message type:', data.type);
         }
